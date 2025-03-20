@@ -15,22 +15,19 @@
           "options": {
             "outputPath": "docs",
             "index": "src/index.html",
-            "baseHref": "/adhex-utils/",
             "browser": "src/main.ts",
+            "baseHref": "/adhex-utils/",
+            "deployUrl": "/adhex-utils/",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
+            "assets": ["src/assets"],
             "styles": ["src/styles.css"],
             "scripts": []
           },
           "configurations": {
             "production": {
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "index": "src/index.html"
             }
           }
         },

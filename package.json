@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration=production",
+    "build": "ng build --configuration production --output-path docs --base-href '/adhex-utils/' && move docs\\browser\\* docs\\ && rmdir /s /q docs\\browser",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:adhex-utils": "node dist/adhex-utils/server/server.mjs"
