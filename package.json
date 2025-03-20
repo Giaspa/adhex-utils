@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production --output-path docs --base-href '/adhex-utils/' && echo '/ /browser/index.html 200' > docs/_redirects",
+    "build": "ng build --configuration production --output-path docs --base-href '/adhex-utils/' && node fix-gh-pages.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
