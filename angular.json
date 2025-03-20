@@ -15,7 +15,7 @@
           "options": {
             "outputPath": "dist/adhex-utils",
             "index": "src/index.html",
-            "baseHref": "adhex-utils",
+            "baseHref": "/adhex-utils/",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
