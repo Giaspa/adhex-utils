@@ -3,18 +3,18 @@
     <div *ngFor="let row of grid; let i = index" class="hex-row flex even:ml-[calc(100vw/12)] -mb-[calc(100vw/22)]">
       <hexagon *ngFor="let hex of row" [color]="hex.color">
         @if(hex.hasBox){
-        <img src="/Box.png" alt="Box" class="box-overlay opacity-25">
+        <img src="assets/Box.png" alt="Box" class="box-overlay opacity-25">
         @if(hex.hasBox.hp > 1){
         <span class="box-hp">{{ hex.hasBox.hp }}</span>
         }
         }
 
         @if(hex.hasBarrier){
-        <img src="/Barrier.png" alt="Barrier" class="barrier-overlay opacity-25">
+        <img src="assets/Barrier.png" alt="Barrier" class="barrier-overlay opacity-25">
         }
 
         @if(hex.hasGambit){
-        <img src="/Gambit.png" alt="Gambit" class="gambit-overlay opacity-25">
+        <img src="assets/Gambit.png" alt="Gambit" class="gambit-overlay opacity-25">
         }
 
         @if(hex.dots && hex.dots.length > 0){
@@ -22,13 +22,13 @@
           @for(hdot of hex.dots; track $index){
           @switch(hdot){
           @case(dots.doubled){
-          <img src="/Doubled.svg" alt="Doubled" class="w-[10px]">
+          <img src="assets/Doubled.svg" alt="Doubled" class="w-[10px]">
           }
           @case(dots.powered){
-          <img src="/Powered.svg" alt="Powered" class="w-[10px]">
+          <img src="assets/Powered.svg" alt="Powered" class="w-[10px]">
           }
           @case(dots.extended){
-          <img src="/Extended.svg" alt="Extended" class="w-[10px]">
+          <img src="assets/Extended.svg" alt="Extended" class="w-[10px]">
           }
           }
           }

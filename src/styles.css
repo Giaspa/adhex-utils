@@ -118,36 +118,36 @@ body{
 
   /* Icone specifiche per ogni pulsante */
   .btn-boost-rain::before {
-    background-image: url('/Boosts.png');
+    background-image: url('assets/Boosts.png');
     background-repeat: no-repeat;
 
   }
 
   .btn-drop-box::before {
-    background-image: url('/Box.png');
+    background-image: url('assets/Box.png');
     background-repeat: no-repeat;
 
   }
 
   .btn-gold-rush::before {
-    background-image: url('/Box.png');
+    background-image: url('assets/Box.png');
     background-repeat: repeat-x
   }
 
   .btn-geomorphism::before {
-    background-image: url('/Barrier.png');
+    background-image: url('assets/Barrier.png');
     background-repeat: no-repeat;
 
   }
 
   .btn-mouse-trap::before {
-    background-image: url('/Gambit.png');
+    background-image: url('assets/Gambit.png');
     background-repeat: no-repeat;
 
   }
 
   .btn-reset::before {
-    background-image: url('/Reset.png');
+    background-image: url('assets/Reset.png');
     background-repeat: no-repeat;
   }
 
