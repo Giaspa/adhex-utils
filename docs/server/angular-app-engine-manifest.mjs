@@ -1,6 +1,6 @@
 
 export default {
-  basePath: 'adhex-utils',
+  basePath: '/adhex-utils',
   supportedLocales: {
   "en-US": ""
 },
