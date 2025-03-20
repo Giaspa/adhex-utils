@@ -16,5 +16,5 @@ if (fs.existsSync(browserPath)) {
 
 // Creazione del file _redirects per GitHub Pages
 const redirectsPath = path.join(docsPath, '_redirects');
-fs.writeFileSync(redirectsPath, '/ /index.html 200\n');
+fs.writeFileSync(redirectsPath, '/* /index.html 200\n');
 console.log("✅ File _redirects creato correttamente!");
