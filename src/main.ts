@@ -1,8 +1,7 @@
-import { bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
-import { ArenaComponent } from './features/arena/arena.component';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppModule } from './app/app.module';
 
-// bootstrapApplication(AppComponent, appConfig)
-//   .catch((err) => console.error(err));
-bootstrapApplication(ArenaComponent, {
-  providers: [] // Rimuovi provideClientHydration() se causa problemi
-});
+platformBrowserDynamic().bootstrapModule(AppModule, {
+  ngZoneEventCoalescing: true,
+})
+  .catch(err => console.error(err));
