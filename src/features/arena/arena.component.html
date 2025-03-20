@@ -1,0 +1,55 @@
+<div class="flex flex-col justify-center items-center w-screen aspect-square">
+  <div class="hex-grid w-fit">
+    <div *ngFor="let row of grid; let i = index" class="hex-row flex even:ml-[calc(100vw/12)] -mb-[calc(100vw/22)]">
+      <hexagon *ngFor="let hex of row" [color]="hex.color">
+        @if(hex.hasBox){
+        <img src="/Box.png" alt="Box" class="box-overlay opacity-25">
+        @if(hex.hasBox.hp > 1){
+        <span class="box-hp">{{ hex.hasBox.hp }}</span>
+        }
+        }
+
+        @if(hex.hasBarrier){
+        <img src="/Barrier.png" alt="Barrier" class="barrier-overlay opacity-25">
+        }
+
+        @if(hex.hasGambit){
+        <img src="/Gambit.png" alt="Gambit" class="gambit-overlay opacity-25">
+        }
+
+        @if(hex.dots && hex.dots.length > 0){
+        <div class="z-2 flex flex-wrap w-[calc(100vw/10)] aspect-square items-center justify-center gap-x-1 gap-y-0">
+          @for(hdot of hex.dots; track $index){
+          @switch(hdot){
+          @case(dots.doubled){
+          <img src="/Doubled.svg" alt="Doubled" class="w-[10px]">
+          }
+          @case(dots.powered){
+          <img src="/Powered.svg" alt="Powered" class="w-[10px]">
+          }
+          @case(dots.extended){
+          <img src="/Extended.svg" alt="Extended" class="w-[10px]">
+          }
+          }
+          }
+        </div>
+        }
+
+      </hexagon>
+
+      <!-- <div [class]="'flex items-center justify-end ' + (i%2==0 ? 'w-[calc(100vw/6)]' : 'w-[calc(100vw/12)]')">
+      <button class="px-2 py-1 hover:cursor-pointer hover:font-bold" (click)="changeColor(i)">
+        < </button>
+    </div> -->
+    </div>
+  </div>
+</div>
+
+<div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2">
+  <button class="btn-action btn-boost-rain" (click)="boostRain()">Boost Rain</button>
+  <button class="btn-action btn-drop-box" (click)="dropBox()">Drop Box</button>
+  <button class="btn-action btn-gold-rush" (click)="goldRush()">Gold Rush</button>
+  <button class="btn-action btn-geomorphism" (click)="geomorphism()">Geomorphism</button>
+  <button class="btn-action btn-mouse-trap" (click)="mouseTrap()">Mouse Trap</button>
+  <button class="btn-action btn-reset" (click)="reset()">Reset</button>
+</div>
