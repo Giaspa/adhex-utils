@@ -48,26 +48,29 @@
   </div>
 </div>
 
-<div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2 border-b-2 pb-4 border-gray-500">
+<div class="mt-6 flex flex-row flex-wrap w-full justify-between gap-8 p-2 border-b-2 pb-4 border-gray-500">
   <button class="btn-action" (click)="isEvents=true; reset()" [disabled]="isEvents">Eventi</button>
+  <button class="btn-boost btn-reset invert" (click)="reset()"></button>
   <button class="btn-action" (click)="isEvents=false; reset()" [disabled]="!isEvents">Mosse</button>
 </div>
 
 @if(isEvents){
+<p class="my-12 text-lg flex flex-row gap-1 text-white justify-center w-full">Seleziona un <b
+    class="text-xl text-slate-500">Evento</b>!</p>
+
 <div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2">
   <button class="btn-action btn-boost-rain" (click)="boostRain()">Boost Rain</button>
   <button class="btn-action btn-drop-box" (click)="dropBox()">Drop Box</button>
   <button class="btn-action btn-gold-rush" (click)="goldRush()">Gold Rush</button>
   <button class="btn-action btn-geomorphism" (click)="geomorphism()">Geomorphism</button>
   <button class="btn-action btn-mouse-trap" (click)="mouseTrap()">Mouse Trap</button>
-  <button class="btn-action btn-reset" (click)="reset()">Reset</button>
 </div>
 }
 @else
 {
-
+@if(hasAdverser){
 @if(!isEvents && currentAction != actionType.NONE){
-<p class="mt-4 text-lg flex flex-row gap-1 text-white justify-center w-full">
+<p class="mt-12 text-lg flex flex-row gap-1 text-white justify-center w-full">
   <b class="text-xl text-amber-500">{{selectedBoosts.doubled + 1}}x</b>
 
   @switch(currentAction){
@@ -119,19 +122,24 @@
 </p>
 }
 
+@if(currentAction !== actionType.NONE){
 <div class="mt-12 flex flex-row flex-wrap w-full justify-evenly gap-4 p-2">
-  <button class="btn-boost btn-extended-boost" (click)="addBoost(dots.extended)" [disabled]="!hasSelectedHex()">
+  <button class="btn-boost btn-extended-boost" (click)="addBoost(dots.extended)">
     {{selectedBoosts.extended}}
   </button>
 
-  <button class="btn-boost btn-doubled-boost" (click)="addBoost(dots.doubled)" [disabled]="!hasSelectedHex()">
+  <button class="btn-boost btn-doubled-boost" (click)="addBoost(dots.doubled)">
     {{selectedBoosts.doubled}}
   </button>
 
-  <button class="btn-boost btn-powered-boost" (click)="addBoost(dots.powered)" [disabled]="!hasSelectedHex()">
+  <button class="btn-boost btn-powered-boost" (click)="addBoost(dots.powered)">
     {{selectedBoosts.powered}}
   </button>
 </div>
+} @else {
+<p class="my-12 text-lg flex flex-row gap-1 text-white justify-center w-full">Seleziona una <b
+    class="text-xl text-slate-500">Mossa</b>!</p>
+}
 
 <div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2">
   <button class="btn-action btn-move-action" (click)="activateAction(actionType.MOVE)"
@@ -161,4 +169,8 @@
     [class.active]="currentAction === actionType.SPRINT"
     [disabled]="isActionDisabled(actionType.SPRINT)">SPRINT</button>
 </div>
+} @else {
+<p class="my-12 text-lg flex flex-row gap-1 text-white justify-center w-full">Seleziona una <b
+    class="text-xl text-stone-500">Cella</b>!</p>
+}
 }

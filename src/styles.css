@@ -115,7 +115,7 @@ body{
     transition: all 0.3s ease-in-out;
     min-width: 50px;
 
-    @apply disabled:border-blue-600 aspect-square
+    @apply disabled:border-red-600 aspect-square
   }
 
   .btn-action::before, .btn-boost::before {

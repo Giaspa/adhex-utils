@@ -120,6 +120,7 @@ export class ArenaComponent {
     powered: 0
   }
   isEvents: boolean = true;
+  hasAdverser: boolean = false;
   highlightedHexes = new Set<string>();
   currentAction: ActionType = ActionType.NONE; // Stato attuale dell'azione
   actionType = ActionType;
@@ -326,6 +327,8 @@ export class ArenaComponent {
 
     this.currentAction = ActionType.NONE; // 🔄 Reset anche dell’azione attiva
 
+    this.hasAdverser = false;
+
     this.grid = [...this.grid]; // 🔥 Forza il Change Detection
     console.log("🔄 Reset completato! Griglia, highlight e boost resettati.");
   }
@@ -345,6 +348,8 @@ export class ArenaComponent {
         this.expandActionArea(); // Ricalcola l'espansione per l'azione attiva
       }
     }
+
+    this.hasAdverser = this.grid.flat().some(hex => hex.hasAdverser);
 
     this.grid = [...this.grid]; // 🔥 Forza il Change Detection
   }
@@ -418,10 +423,10 @@ export class ArenaComponent {
   }
 
   isActionDisabled(action: ActionType): boolean {
-    const hasAdverser = this.grid.flat().some(hex => hex.hasAdverser);
+    // const hasAdverser = this.grid.flat().some(hex => hex.hasAdverser);
 
     // 1️⃣ Nessun esagono selezionato → disabilita
-    if (!hasAdverser) return true;
+    if (!this.hasAdverser) return true;
 
     // 2️⃣ Se è attiva un’altra azione → disabilita
     if (this.currentAction !== ActionType.NONE && this.currentAction === action) {
@@ -431,12 +436,6 @@ export class ArenaComponent {
     // ✅ Altrimenti l'azione è abilitata
     return false;
   }
-
-  hasSelectedHex(): boolean {
-    return this.grid.flat().some(hex => hex.hasAdverser);
-  }
-
-
 }
 
 function generateExpansionMap(range: number): Record<string, string[]> {
