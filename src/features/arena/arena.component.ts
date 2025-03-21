@@ -119,7 +119,7 @@ export class ArenaComponent {
     doubled: 0,
     powered: 0
   }
-  isEvents: boolean = false;
+  isEvents: boolean = true;
   highlightedHexes = new Set<string>();
   currentAction: ActionType = ActionType.NONE; // Stato attuale dell'azione
   actionType = ActionType;
@@ -496,7 +496,7 @@ const HEX_ADJACENCY_MAP: Record<string, string[]> = {
   "21": ["16", "22", "26"],
   "22": ["16", "17", "21", "23", "26", "27"],
   "23": ["17", "18", "22", "24", "27", "28"],
-  "24": ["18", "19", "25", "28", "29"],
+  "24": ["18", "19", "23", "25", "28", "29"],
   "25": ["19", "20", "24", "29", "30"],
   "26": ["21", "22", "27"],
   "27": ["22", "23", "26", "28"],

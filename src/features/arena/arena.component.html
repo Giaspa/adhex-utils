@@ -4,6 +4,7 @@
       <hexagon *ngFor="let hex of row" [color]="setHexColor(hex.color, hex.hasAdverser, highlightedHexes.has(hex.id))"
         [hexId]="hex.id" (clickEventEmitter)="putAdverser($event)">
 
+        <!-- {{hex.id}} -->
         @if(hex.hasBox){
         <img src="assets/Box.png" alt="Box" class="box-overlay opacity-25">
         @if(hex.hasBox.hp > 1){
