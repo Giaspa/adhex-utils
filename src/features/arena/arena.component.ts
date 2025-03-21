@@ -7,14 +7,37 @@ const enum Dot {
   BLU = "Extended",
   YELLOW = "Doubled",
 }
+enum ActionType {
+  NONE = "none",
+  MOVE = "move",
+  HIT = "hit",
+  CONTROL = "control",
+  TRAP = "trap",
+  BUILD = "build",
+  BOMB = "bomb",
+  DODGE = "dodge",
+  BUFF = "buff",
+  SPRINT = "sprint",
+  REACH = "reach"
+}
 type Gambit = { hp: number }
 type Box = { hp: number }
 type Barrier = { hp: number }
-type Hex = { id: string, color: string, isMidzone?: boolean, dots?: Dot[], hasBox?: Box, hasBarrier?: Barrier, hasGambit?: Gambit };
+type Hex = {
+  id: string,
+  color: string,
+  isMidzone?: boolean,
+  dots?: Dot[],
+  hasBox?: Box,
+  hasBarrier?: Barrier,
+  hasGambit?: Gambit,
+  hasAdverser?: boolean,
+  isHighlighted?: boolean
+};
 const enum Team {
-  RED = "bg-red-400",
-  BLU = "bg-blue-400",
-  NEUTRAL = "bg-gray-400",
+  RED = "bg-fuchsia-400",
+  BLU = "bg-emerald-400",
+  NEUTRAL = "bg-slate-400",
 }
 @Component({
   selector: 'arena',
@@ -91,6 +114,16 @@ export class ArenaComponent {
       { id: "30", color: Team.NEUTRAL },
     ]
   ]
+  selectedBoosts = {
+    extended: 0,
+    doubled: 0,
+    powered: 0
+  }
+  isEvents: boolean = false;
+  highlightedHexes = new Set<string>();
+  currentAction: ActionType = ActionType.NONE; // Stato attuale dell'azione
+  actionType = ActionType;
+  math = Math;
 
   constructor() {
     this.generateGrid();
@@ -159,7 +192,7 @@ export class ArenaComponent {
   }
 
   dropBox(reset: boolean = true) {
-    if(reset) {
+    if (reset) {
       this.reset();
     }
 
@@ -274,17 +307,200 @@ export class ArenaComponent {
   reset() {
     this.grid.forEach(row => {
       row.forEach(hex => {
-        // 🔄 Rimuove Box, Barriere, Trappole e Dots
         hex.hasBox = undefined;
         hex.hasBarrier = undefined;
         hex.hasGambit = undefined;
         hex.dots = [];
+        hex.hasAdverser = false;
+        hex.isHighlighted = false; // 🔥 RESETTA l'highlight visivo
       });
     });
 
-    // 🔥 Forza il Change Detection di Angular
-    this.grid = [...this.grid];
+    this.highlightedHexes.clear(); // 🔥 Pulisce anche il Set usato per l'highlight
 
-    console.log("🔄 Reset completato! La griglia è stata ripristinata.");
+    this.selectedBoosts = {
+      extended: 0,
+      doubled: 0,
+      powered: 0
+    };
+
+    this.currentAction = ActionType.NONE; // 🔄 Reset anche dell’azione attiva
+
+    this.grid = [...this.grid]; // 🔥 Forza il Change Detection
+    console.log("🔄 Reset completato! Griglia, highlight e boost resettati.");
   }
+
+  putAdverser(event: string) {
+    let selectedHex = this.grid.flat().find(hex => hex.id === event);
+    if (!selectedHex) return;
+
+    if (selectedHex.hasAdverser) {
+      selectedHex.hasAdverser = false; // Deseleziona l'Adverser
+      this.highlightedHexes.clear(); // Rimuove l'highlight
+    } else {
+      this.grid.flat().forEach(hex => (hex.hasAdverser = false)); // Resetta gli altri
+      selectedHex.hasAdverser = true;
+
+      if (this.currentAction !== ActionType.NONE) {
+        this.expandActionArea(); // Ricalcola l'espansione per l'azione attiva
+      }
+    }
+
+    this.grid = [...this.grid]; // 🔥 Forza il Change Detection
+  }
+
+  addBoost(type: Dot) {
+    switch (type) {
+      case Dot.BLU:
+        this.selectedBoosts.extended++;
+        break;
+
+      case Dot.RED:
+        this.selectedBoosts.powered++;
+        break;
+
+      case Dot.YELLOW:
+        this.selectedBoosts.doubled++;
+        break;
+    }
+    this.expandActionArea();
+
+    this.grid = [...this.grid]; // Forza il Change Detection
+  }
+
+  setHexColor(defaultColor: string, hasAdverser: boolean = false, isHighlighted: boolean = false): string {
+    if(!this.isEvents){
+      if (hasAdverser) {
+        return "bg-[url(assets/Adverser.png)] bg-cover";
+      }
+      if (isHighlighted) {
+        return "bg-blue-700 blur-sm"; // Giallo per celle evidenziate
+      }
+    }
+    return defaultColor;
+  }
+
+  activateAction(action: ActionType) {
+    if (!this.grid.flat().some(hex => hex.hasAdverser)) {
+      console.warn("⚠️ Nessun esagono selezionato! Seleziona un esagono prima di attivare un'azione.");
+      return;
+    }
+
+    if (this.currentAction === action) {
+      this.currentAction = ActionType.NONE; // Disattiva l'azione
+      this.highlightedHexes.clear(); // Rimuove l'highlight
+    } else {
+      this.currentAction = action;
+      this.expandActionArea(); // Applica l'espansione basata sull'azione
+    }
+
+    this.grid = [...this.grid]; // 🔥 Forza il Change Detection
+  }
+
+  // 🔹 Espansione per l'azione attiva
+  private expandActionArea() {
+    const selectedHex = this.grid.flat().find(hex => hex.hasAdverser);
+    if (!selectedHex) return;
+
+    this.highlightedHexes.clear();
+    const range = this.selectedBoosts.extended;
+
+    if (range === 0) {
+      const neighbors = HEX_ADJACENCY_MAP[selectedHex.id] || [];
+      neighbors.forEach(neighborId => this.highlightedHexes.add(neighborId));
+    } else {
+      const expansionMap = generateExpansionMap(range + 1);
+      const expandedHexes = expansionMap[selectedHex.id] || [];
+      expandedHexes.forEach(neighborId => this.highlightedHexes.add(neighborId));
+    }
+
+    this.grid = [...this.grid]; // 🔥 Forza il Change Detection
+  }
+
+  isActionDisabled(action: ActionType): boolean {
+    const hasAdverser = this.grid.flat().some(hex => hex.hasAdverser);
+
+    // 1️⃣ Nessun esagono selezionato → disabilita
+    if (!hasAdverser) return true;
+
+    // 2️⃣ Se è attiva un’altra azione → disabilita
+    if (this.currentAction !== ActionType.NONE && this.currentAction === action) {
+      return true;
+    }
+
+    // ✅ Altrimenti l'azione è abilitata
+    return false;
+  }
+
+  hasSelectedHex(): boolean {
+    return this.grid.flat().some(hex => hex.hasAdverser);
+  }
+
+
 }
+
+function generateExpansionMap(range: number): Record<string, string[]> {
+  let expansionMap: Record<string, Set<string>> = {};
+
+  Object.keys(HEX_ADJACENCY_MAP).forEach(hexId => {
+    let visited = new Set<string>();
+    let queue: [string, number][] = [[hexId, 0]]; // [hexId, depth]
+
+    while (queue.length > 0) {
+      let [currentHex, depth] = queue.shift()!;
+
+      if (depth >= range) continue;
+      if (!HEX_ADJACENCY_MAP[currentHex]) continue;
+
+      HEX_ADJACENCY_MAP[currentHex].forEach(neighbor => {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          queue.push([neighbor, depth + 1]);
+        }
+      });
+    }
+
+    expansionMap[hexId] = visited; // Salviamo la lista di esagoni espansi per ogni hex
+  });
+
+  // Convertiamo Set<string> in string[]
+  let result: Record<string, string[]> = {};
+  Object.keys(expansionMap).forEach(hexId => {
+    result[hexId] = Array.from(expansionMap[hexId]);
+  });
+
+  return result;
+}
+
+const HEX_ADJACENCY_MAP: Record<string, string[]> = {
+  "1": ["2", "6"],
+  "2": ["1", "3", "6", "7"],
+  "3": ["2", "4", "7", "8"],
+  "4": ["3", "5", "8", "9"],
+  "5": ["4", "9", "10"],
+  "6": ["1", "2", "7", "11", "12"],
+  "7": ["2", "3", "6", "8", "12", "13"],
+  "8": ["3", "4", "7", "9", "13", "14"],
+  "9": ["4", "5", "8", "10", "14", "15"],
+  "10": ["5", "9", "15"],
+  "11": ["6", "12", "16"],
+  "12": ["6", "7", "11", "13", "16", "17"],
+  "13": ["7", "8", "12", "14", "17", "18"],
+  "14": ["8", "9", "13", "15", "18", "19"],
+  "15": ["9", "10", "14", "19", "20"],
+  "16": ["11", "12", "17", "21", "22"],
+  "17": ["12", "13", "16", "18", "22", "23"],
+  "18": ["13", "14", "17", "19", "23", "24"],
+  "19": ["14", "15", "18", "20", "24", "25"],
+  "20": ["15", "19", "25"],
+  "21": ["16", "22", "26"],
+  "22": ["16", "17", "21", "23", "26", "27"],
+  "23": ["17", "18", "22", "24", "27", "28"],
+  "24": ["18", "19", "25", "28", "29"],
+  "25": ["19", "20", "24", "29", "30"],
+  "26": ["21", "22", "27"],
+  "27": ["22", "23", "26", "28"],
+  "28": ["23", "24", "27", "29"],
+  "29": ["24", "25", "28", "30"],
+  "30": ["25", "29"]
+};

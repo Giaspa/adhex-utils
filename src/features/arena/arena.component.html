@@ -1,7 +1,9 @@
 <div class="flex flex-col justify-center items-center w-screen aspect-square">
   <div class="hex-grid w-fit">
     <div *ngFor="let row of grid; let i = index" class="hex-row flex even:ml-[calc(100vw/12)] -mb-[calc(100vw/22)]">
-      <hexagon *ngFor="let hex of row" [color]="hex.color">
+      <hexagon *ngFor="let hex of row" [color]="setHexColor(hex.color, hex.hasAdverser, highlightedHexes.has(hex.id))"
+        [hexId]="hex.id" (clickEventEmitter)="putAdverser($event)">
+
         @if(hex.hasBox){
         <img src="assets/Box.png" alt="Box" class="box-overlay opacity-25">
         @if(hex.hasBox.hp > 1){
@@ -45,6 +47,12 @@
   </div>
 </div>
 
+<div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2 border-b-2 pb-4 border-gray-500">
+  <button class="btn-action" (click)="isEvents=true; reset()" [disabled]="isEvents">Eventi</button>
+  <button class="btn-action" (click)="isEvents=false; reset()" [disabled]="!isEvents">Mosse</button>
+</div>
+
+@if(isEvents){
 <div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2">
   <button class="btn-action btn-boost-rain" (click)="boostRain()">Boost Rain</button>
   <button class="btn-action btn-drop-box" (click)="dropBox()">Drop Box</button>
@@ -53,3 +61,103 @@
   <button class="btn-action btn-mouse-trap" (click)="mouseTrap()">Mouse Trap</button>
   <button class="btn-action btn-reset" (click)="reset()">Reset</button>
 </div>
+}
+@else
+{
+
+@if(!isEvents && currentAction != actionType.NONE){
+<p class="mt-4 text-lg flex flex-row gap-1 text-white justify-center w-full">
+  <b class="text-xl text-amber-500">{{selectedBoosts.doubled + 1}}x</b>
+
+  @switch(currentAction){
+  @case (actionType.MOVE) {
+  <span>Sposta la Fonte di <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> passo/i.</span>
+  }
+  @case (actionType.HIT) {
+  <span>Infliggi <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> danno/i ad un bersaglio.</span>
+  }
+  @case (actionType.CONTROL) {
+  <span>Sposta un bersaglio di <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> passo/i.</span>
+  }
+  @case (actionType.BUILD) {
+  <span>Colloca una BARRIER con <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> HP.</span>
+  }
+  @case (actionType.TRAP) {
+  <span>Colloca un GAMBIT con <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> HP che infligge <b
+      class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> danno/i.</span>
+  }
+  @case (actionType.DODGE) {
+  <span>Aumenta gli HP di un bersaglio di <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b>.</span>
+  }
+  @case (actionType.BOMB) {
+  <span>
+    Infliggi
+    <b class="text-xl text-red-500">
+      {{ ((selectedBoosts.powered + 1) - math.floor((selectedBoosts.powered + 1) / 2)) | number:'1.0-0' }}
+    </b>
+    danno/i ad un bersaglio e
+    <b class="text-xl text-red-500">
+      {{ (math.floor((selectedBoosts.powered + 1) / 2)) | number:'1.0-0' }}
+    </b>
+    danno/i ad un altro bersaglio.
+  </span>
+  }
+  @case (actionType.BUFF) {
+  <span>Assegna <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> Boost Powered ad un
+    bersaglio.</span>
+  }
+  @case (actionType.SPRINT) {
+  <span>Assegna <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> Boost Doubled ad un
+    bersaglio.</span>
+  }
+  @case (actionType.REACH) {
+  <span>Assegna <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> Boost Extended ad un
+    bersaglio.</span>
+  }
+  }
+</p>
+}
+
+<div class="mt-12 flex flex-row flex-wrap w-full justify-evenly gap-4 p-2">
+  <button class="btn-boost btn-extended-boost" (click)="addBoost(dots.extended)" [disabled]="!hasSelectedHex()">
+    {{selectedBoosts.extended}}
+  </button>
+
+  <button class="btn-boost btn-doubled-boost" (click)="addBoost(dots.doubled)" [disabled]="!hasSelectedHex()">
+    {{selectedBoosts.doubled}}
+  </button>
+
+  <button class="btn-boost btn-powered-boost" (click)="addBoost(dots.powered)" [disabled]="!hasSelectedHex()">
+    {{selectedBoosts.powered}}
+  </button>
+</div>
+
+<div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2">
+  <button class="btn-action btn-move-action" (click)="activateAction(actionType.MOVE)"
+    [class.active]="currentAction === actionType.MOVE" [disabled]="isActionDisabled(actionType.MOVE)">MOVE</button>
+
+  <button class="btn-action btn-hit-action" (click)="activateAction(actionType.HIT)"
+    [class.active]="currentAction === actionType.HIT" [disabled]="isActionDisabled(actionType.HIT)">HIT</button>
+
+  <button class="btn-action btn-control-action" (click)="activateAction(actionType.CONTROL)"
+    [class.active]="currentAction === actionType.CONTROL"
+    [disabled]="isActionDisabled(actionType.CONTROL)">CONTROL</button>
+
+  <button class="btn-action btn-trap-action" (click)="activateAction(actionType.TRAP)"
+    [class.active]="currentAction === actionType.TRAP" [disabled]="isActionDisabled(actionType.TRAP)">TRAP</button>
+
+  <button class="btn-action btn-build-action" (click)="activateAction(actionType.BUILD)"
+    [class.active]="currentAction === actionType.BUILD" [disabled]="isActionDisabled(actionType.BUILD)">BUILD</button>
+  <button class="btn-action btn-dodge-action" (click)="activateAction(actionType.DODGE)"
+    [class.active]="currentAction === actionType.DODGE" [disabled]="isActionDisabled(actionType.DODGE)">DODGE</button>
+  <button class="btn-action btn-bomb-action" (click)="activateAction(actionType.BOMB)"
+    [class.active]="currentAction === actionType.BOMB" [disabled]="isActionDisabled(actionType.BOMB)">BOMB</button>
+  <button class="btn-action btn-buff-action" (click)="activateAction(actionType.BUFF)"
+    [class.active]="currentAction === actionType.BUFF" [disabled]="isActionDisabled(actionType.BUFF)">BUFF</button>
+  <button class="btn-action btn-buff-action" (click)="activateAction(actionType.REACH)"
+    [class.active]="currentAction === actionType.REACH" [disabled]="isActionDisabled(actionType.REACH)">REACH</button>
+  <button class="btn-action btn-buff-action" (click)="activateAction(actionType.SPRINT)"
+    [class.active]="currentAction === actionType.SPRINT"
+    [disabled]="isActionDisabled(actionType.SPRINT)">SPRINT</button>
+</div>
+}

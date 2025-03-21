@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'hexagon',
@@ -9,4 +9,10 @@ import { Component, Input } from '@angular/core';
 })
 export class HexagonComponent {
   @Input() color: string = "bg-blue-500"
+  @Input() hexId: string = "1"
+  @Output() clickEventEmitter: EventEmitter<any> = new EventEmitter<any>();
+
+  clickHandle(){
+    this.clickEventEmitter.emit(this.hexId)
+  }
 }

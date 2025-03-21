@@ -98,9 +98,27 @@ body{
     overflow: hidden;
     transition: all 0.3s ease-in-out;
     min-width: 150px;
+
+    @apply disabled:border-blue-600
+  }
+  .btn-boost {
+    position: relative;
+    padding: 10px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    /* background-color: rgba(255, 255, 255, 0.9); */
+    color: white;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    min-width: 50px;
+
+    @apply disabled:border-blue-600 aspect-square
   }
 
-  .btn-action::before {
+  .btn-action::before, .btn-boost::before {
     content: "";
     position: absolute;
     top: 50%;
@@ -151,9 +169,53 @@ body{
     background-repeat: no-repeat;
   }
 
+  .btn-move-action::before {
+    background-image: url('assets/Move.png');
+    background-repeat: no-repeat;
+  }
+  .btn-bomb-action::before {
+    background-image: url('assets/Bomb.png');
+    background-repeat: no-repeat;
+  }
+  .btn-buff-action::before {
+    background-image: url('assets/Buff.png');
+    background-repeat: no-repeat;
+  }
+  .btn-build-action::before {
+    background-image: url('assets/Build.png');
+    background-repeat: no-repeat;
+  }
+  .btn-control-action::before {
+    background-image: url('assets/Control.png');
+    background-repeat: no-repeat;
+  }
+  .btn-dodge-action::before {
+    background-image: url('assets/Dodge.png');
+    background-repeat: no-repeat;
+  }
+  .btn-hit-action::before {
+    background-image: url('assets/Hit.png');
+    background-repeat: no-repeat;
+  }
+  .btn-trap-action::before {
+    background-image: url('assets/Trap.png');
+    background-repeat: no-repeat;
+  }
+  .btn-extended-boost::before {
+    background-image: url('assets/Extended.svg');
+    background-repeat: no-repeat;
+  }
+  .btn-doubled-boost::before {
+    background-image: url('assets/Doubled.svg');
+    background-repeat: no-repeat;
+  }
+  .btn-powered-boost::before {
+    background-image: url('assets/Powered.svg');
+    background-repeat: no-repeat;
+  }
+
   /* Effetto hover */
   .btn-action:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    transform: scale(1.05);
+    @apply scale-105 disabled:scale-none bg-black disabled:bg-transparent opacity-50 disabled:opacity-100 disabled:cursor-not-allowed
   }
 }
