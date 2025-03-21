@@ -48,7 +48,7 @@
   </div>
 </div>
 
-<div class="mt-6 flex flex-row flex-wrap w-full justify-between gap-8 p-2 border-b-2 pb-4 border-gray-500">
+<div class="mt-6 flex flex-row flex-wrap w-full justify-between p-2 border-b-2 pb-4 border-gray-500">
   <button class="btn-action" (click)="isEvents=true; reset()" [disabled]="isEvents">Eventi</button>
   <button class="btn-boost btn-reset invert" (click)="reset()"></button>
   <button class="btn-action" (click)="isEvents=false; reset()" [disabled]="!isEvents">Mosse</button>
@@ -70,28 +70,33 @@
 {
 @if(hasAdverser){
 @if(!isEvents && currentAction != actionType.NONE){
-<p class="mt-12 text-lg flex flex-row gap-1 text-white justify-center w-full">
+<p class="mt-12 px-6 text-center text-lg flex flex-row gap-1 text-white justify-center w-full">
   <b class="text-xl text-amber-500">{{selectedBoosts.doubled + 1}}x</b>
 
   @switch(currentAction){
   @case (actionType.MOVE) {
-  <span>Sposta la Fonte di <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> passo/i.</span>
+  <span>Sposta l'Adverser di <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> passo/i contigui <b class="text-xl text-blue-500">nell'Area </b> <u>(non nella Teamzone avversaria!)</u>.</span>
   }
   @case (actionType.HIT) {
-  <span>Infliggi <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> danno/i ad un bersaglio.</span>
+  <span>Infliggi <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> danno/i ad un bersaglio <b
+      class="text-xl text-blue-500">nell'Area</b>.</span>
   }
   @case (actionType.CONTROL) {
-  <span>Sposta un bersaglio di <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> passo/i.</span>
+  <span>Sposta un bersaglio <b class="text-xl text-blue-500">nell'Area</b> di <b
+      class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> passo/i contigui.</span>
   }
   @case (actionType.BUILD) {
-  <span>Colloca una BARRIER con <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> HP.</span>
+  <span>Colloca <b class="text-xl text-blue-500">nell'Area</b> una BARRIER con <b
+      class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> HP.</span>
   }
   @case (actionType.TRAP) {
-  <span>Colloca un GAMBIT con <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> HP che infligge <b
+  <span>Colloca <b class="text-xl text-blue-500">nell'Area</b> un GAMBIT con <b
+      class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> HP che infligge <b
       class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> danno/i.</span>
   }
   @case (actionType.DODGE) {
-  <span>Aumenta gli HP di un bersaglio di <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b>.</span>
+  <span>Aumenta gli HP di un bersaglio <b class="text-xl text-blue-500">nell'Area</b> di <b
+      class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b>.</span>
   }
   @case (actionType.BOMB) {
   <span>
@@ -99,24 +104,24 @@
     <b class="text-xl text-red-500">
       {{ ((selectedBoosts.powered + 1) - math.floor((selectedBoosts.powered + 1) / 2)) | number:'1.0-0' }}
     </b>
-    danno/i ad un bersaglio e
+    danno/i ad un bersaglio <b class="text-xl text-blue-500">nell'Area</b> e
     <b class="text-xl text-red-500">
       {{ (math.floor((selectedBoosts.powered + 1) / 2)) | number:'1.0-0' }}
     </b>
-    danno/i ad un altro bersaglio.
+    danno/i ad un altro bersaglio contiguo.
   </span>
   }
   @case (actionType.BUFF) {
   <span>Assegna <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> Boost Powered ad un
-    bersaglio.</span>
+    bersaglio <b class="text-xl text-blue-500">nell'Area</b>.</span>
   }
   @case (actionType.SPRINT) {
   <span>Assegna <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> Boost Doubled ad un
-    bersaglio.</span>
+    bersaglio <b class="text-xl text-blue-500">nell'Area</b>.</span>
   }
   @case (actionType.REACH) {
   <span>Assegna <b class="text-xl text-red-500">{{selectedBoosts.powered + 1}}</b> Boost Extended ad un
-    bersaglio.</span>
+    bersaglio <b class="text-xl text-blue-500">nell'Area</b>.</span>
   }
   }
 </p>
@@ -127,11 +132,9 @@
   <button class="btn-boost btn-extended-boost" (click)="addBoost(dots.extended)">
     {{selectedBoosts.extended}}
   </button>
-
   <button class="btn-boost btn-doubled-boost" (click)="addBoost(dots.doubled)">
     {{selectedBoosts.doubled}}
   </button>
-
   <button class="btn-boost btn-powered-boost" (click)="addBoost(dots.powered)">
     {{selectedBoosts.powered}}
   </button>
@@ -144,17 +147,13 @@
 <div class="mt-12 flex flex-row flex-wrap w-full justify-between gap-8 p-2">
   <button class="btn-action btn-move-action" (click)="activateAction(actionType.MOVE)"
     [class.active]="currentAction === actionType.MOVE" [disabled]="isActionDisabled(actionType.MOVE)">MOVE</button>
-
   <button class="btn-action btn-hit-action" (click)="activateAction(actionType.HIT)"
     [class.active]="currentAction === actionType.HIT" [disabled]="isActionDisabled(actionType.HIT)">HIT</button>
-
   <button class="btn-action btn-control-action" (click)="activateAction(actionType.CONTROL)"
     [class.active]="currentAction === actionType.CONTROL"
     [disabled]="isActionDisabled(actionType.CONTROL)">CONTROL</button>
-
   <button class="btn-action btn-trap-action" (click)="activateAction(actionType.TRAP)"
     [class.active]="currentAction === actionType.TRAP" [disabled]="isActionDisabled(actionType.TRAP)">TRAP</button>
-
   <button class="btn-action btn-build-action" (click)="activateAction(actionType.BUILD)"
     [class.active]="currentAction === actionType.BUILD" [disabled]="isActionDisabled(actionType.BUILD)">BUILD</button>
   <button class="btn-action btn-dodge-action" (click)="activateAction(actionType.DODGE)"
